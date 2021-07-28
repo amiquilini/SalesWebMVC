@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using SalesWebMVC.Models.Enums;
 
 namespace SalesWebMVC.Services
 {
@@ -53,5 +54,11 @@ namespace SalesWebMVC.Services
                 .GroupBy(x => x.Seller.Department)
                 .ToListAsync();
         }
+        public async Task InsertAsync(SalesRecord obj)
+        {
+            _context.Add(obj);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }
