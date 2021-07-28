@@ -7,6 +7,8 @@ using SalesWebMVC.Services;
 using SalesWebMVC.Models;
 using SalesWebMVC.Models.ViewModels;
 using SalesWebMVC.Models.Enums;
+using SalesWebMVC.Services.Exceptions;
+using System.Diagnostics;
 
 namespace SalesWebMVC.Controllers
 {
@@ -74,17 +76,31 @@ namespace SalesWebMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(SalesRecord sale)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                var sellers = await _sellerService.FindAllAsync();
-                var status = new List<SaleStatus> { SaleStatus.Pending, SaleStatus.Billed, SaleStatus.Canceled };
-                var viewModel = new SaleFormViewModel { Sellers = sellers, Status = status };
+                if (!ModelState.IsValid)
+                {
+                    var sellers = await _sellerService.FindAllAsync();
+                    var status = new List<SaleStatus> { SaleStatus.Pending, SaleStatus.Billed, SaleStatus.Canceled };
+                    var viewModel = new SaleFormViewModel { Sellers = sellers, Status = status };
 
-                return View(viewModel);
+                    return View(viewModel);
+                }
+
+                await _salesRecordService.InsertAsync(sale);
+                return RedirectToAction(nameof(Index));
             }
+            catch (SameIdException e)
+            {
+                return RedirectToAction(nameof(Error), new { message = e.Message });
+            }
+        }
 
-            await _salesRecordService.InsertAsync(sale);
-            return RedirectToAction(nameof(Index));
+        public IActionResult Error(string message)
+        {
+            var viewModel = new ErrorViewModel { Message = message, RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier };
+
+            return View(viewModel);
         }
     }
 }

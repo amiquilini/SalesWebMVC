@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SalesWebMVC.Models.Enums;
+using SalesWebMVC.Services.Exceptions;
 
 namespace SalesWebMVC.Services
 {
@@ -56,6 +57,12 @@ namespace SalesWebMVC.Services
         }
         public async Task InsertAsync(SalesRecord obj)
         {
+            bool hasAny = await _context.SalesRecord.AnyAsync(x => x.Id == obj.Id);
+
+            if (hasAny)
+            {
+                throw new SameIdException("This Id is already associated with a sale");
+            }
             _context.Add(obj);
             await _context.SaveChangesAsync();
         }
