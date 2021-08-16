@@ -1,0 +1,7 @@
+# SalesWebMVC
+Udemy/NelioAlves - C# Course Project - ASP.NET Core 2.1
+
+- This is a WEB Application using ASP.NET Core MVC to simulate a Store system. 
+- In this application, it is possible to register/modify new departments, sellers and sales. 
+- Also, it is possible to search for sales registered in a given time.
+- DB connection was made with MySQL.
